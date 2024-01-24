@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id "com.microsoft.azure.azurefunctions" version "1.11.0"
+}
+
+apply plugin: 'java'
+apply plugin: "com.microsoft.azure.azurefunctions"
+
+group = 'com.example.azurefunctionjava'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                "Main-Class": "com.example.azurefunctionjava.AzureFunctionJavaApplication"
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation "org.springframework.cloud:spring-cloud-function-adapter-azure:4.1.0"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Configuration options: https://github.com/microsoft/azure-gradle-plugins/wiki/Configuration
+azurefunctions {
+    resourceGroup = 'java-functions-group'
+    appName = 'java-function-app'
+    appServicePlanName = 'azure-function-java'
+    appSettings {
+        FUNCTIONS_EXTENSION_VERSION = '~4'
+    }
+    localDebug = "transport=dt_socket,server=y,suspend=n,address=5005"
+}
